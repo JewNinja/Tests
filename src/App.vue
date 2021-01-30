@@ -1,10 +1,30 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
-  <router-view/>
+  <el-header>
+    <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" router>
+      <el-menu-item index="/tests">Тесты</el-menu-item>
+      <el-menu-item index="/other" disabled>Ещё что то</el-menu-item>
+    </el-menu>
+  </el-header>
+  <el-container>
+    <el-container>
+      <el-main>
+        <router-view/>
+      </el-main>
+    </el-container>
+  </el-container>
 </template>
+
+<script>
+  export default {
+    data() {
+      // let a = window.location.pathname.match(/\/\w*/)[0]
+      // debugger
+      return {
+        activeIndex: window.location.pathname.match(/\/\w*/)[0], // TODO: сделать как то получше 
+      };
+    },
+  }
+</script>
 
 <style>
 #app {
