@@ -1,6 +1,6 @@
 <template>
   <el-header>
-    <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" router>
+    <el-menu :default-active="activeIndex" class="app_el-nav-topbar" mode="horizontal" router>
       <el-menu-item index="/tests">Тесты</el-menu-item>
       <el-menu-item index="/other" disabled>Ещё что то</el-menu-item>
     </el-menu>
@@ -31,20 +31,13 @@
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
 }
-
-#nav {
-  padding: 30px;
+.app_el-nav-topbar {
+  display: flex;
+  justify-content: center;
 }
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
+.el-main {
+  padding: 20px 0 !important;
 }
 </style>

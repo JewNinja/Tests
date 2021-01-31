@@ -133,6 +133,35 @@ export default createStore({
     //     name: 'yura'
     //   },
     // ],
+    // {
+    //   header: 'Какой у тебя тип телосложения?',
+    //   type: 'nearest',
+    //   questions: [
+    //     { 
+    //       query: 'какой вы?',
+    //       answers: [
+    //         { text: 'Я мезоморф', values: { Mez: 90, End: 5, Ek: 5, }},
+    //         { text: 'Я ендоморф', values: { Mez: 5, End: 9, Ek: 5, }},
+    //         { text: 'Я эктоморф', values: { Mez: 5, End: 5, Ek: 9, }},
+    //       ]
+    //     },
+    //     { 
+    //       query: 'какой вы?',
+    //       answers: [
+    //         { text: 'Красный!', values: { Mez: 6, End: 3, Ek: 1, }},
+    //         { text: 'Зелёный(', values: { Mez: 1, End: 1, Ek: 8, }},
+    //         { text: 'Оранжевый)', values: { Mez: 1, End: 7, Ek: 2, }},
+    //       ]
+    //     },
+    //   ],
+    //   results: {
+    //     Mez: 'Вы мезоморф', 
+    //     End: 'Вы ендоморф',
+    //     Ek: 'Вы эктоморф',
+    //   },
+    //   keys: ['Mez', 'End', 'Ek'],
+    //   name: 'constitution'
+    // },
   },
   mutations: {
     setTests(state, tests) {
