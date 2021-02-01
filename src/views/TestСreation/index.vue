@@ -7,7 +7,7 @@
         prop="title"
         :rules="[
           { required: true, message: 'is required'},
-          { validator: titleOccupiedCheck, message: 'Такое название уже занято -няЪъъ', trigger: 'change' },
+          { validator: titleOccupiedCheck, message: 'Такое название уже занято -няЪъъ', trigger: ['change', 'blur'] }, // TODO: запрос на проверку идёт и на блюр, даже если имя не менялось. Попытаться исправить. Но в валидатор не приходя превПропсы или метод. Метод/проверку можно разделить на блюр и чейнж. Но тогда надо что то придумать с превпропсами 
         ]"
       >
         <el-input v-model="newTest.title" size="medium"></el-input>
@@ -62,6 +62,7 @@ import router from "@/router"
 import store from "@/store"
 import { defineComponent, ref } from "vue"
 import { debounce } from 'vue-debounce'
+import { getBusyStatus } from '@/config/api'
 
   export default defineComponent({
     data() {
@@ -90,12 +91,9 @@ import { debounce } from 'vue-debounce'
     },
     methods: { // TODO: такой дебаунс подходит для случаев когда компонент используется один раз. 
       titleOccupiedCheck: debounce(function(rule: any, value: string, callback: any) { // Так написано в доке
-        console.log(1);
-        // console.log(1);
-        // const dFn = debounce(callback(
-        //   new Error(rule.message)
-        // ), '10000ms')
-        // dFn()
+        getBusyStatus('title', value).then(res => {
+          res?.data === 'free' ? callback() : callback(new Error(rule.message))
+        })
       }, '500ms'),
     }
 

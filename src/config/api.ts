@@ -20,3 +20,12 @@ export const getTests = (order = {}, filter = {}, page = 1, perPage = 100) => ax
     ...filter,
   },
 })
+
+export const getBusyStatus = (key: string, value: string) => axiosInstance({
+  method: 'get',
+  url: '/busy',
+  params: {
+    key,
+    value,
+  },
+})
