@@ -1,7 +1,9 @@
 <template>
   <el-card class="card-container">
-    <h3>Создание теста</h3>
-    <el-form ref="form" :model="newTest" :rules="rules" label-width="80px">
+    <h2>Создание теста</h2>
+
+    <el-form class="new-test-form" ref="form" :model="newTest" :rules="rules" label-width="120px">
+
       <el-form-item
         label="Название"
         prop="title"
@@ -13,11 +15,47 @@
         <el-input v-model="newTest.title" size="medium"></el-input>
         <!-- <el-input v-debounce:500="titleOccupiedCheck" v-model="newTest.title" size="medium"></el-input> -->
       </el-form-item>
+
       <el-form-item label="Тип теста" class="type-item">
         <el-radio-group v-model="newTest.type">
           <el-radio-button label="someone">Один из</el-radio-button>
           <el-radio-button label="nearest">Ближайший</el-radio-button>
         </el-radio-group>
+      </el-form-item>
+
+      <h3 class="section-header">Вопросы</h3>
+      <div class="question-container" v-for="(question, qIndex) in newTest.questions" :key="qIndex">
+        <h4 class="question-header">Вопрос №{{qIndex+1}}</h4>
+
+        <el-form-item label="Вопрос:">
+          <el-input v-model="question.query" size="medium"></el-input>
+        </el-form-item>
+
+        <h4 class="answer-variants">Варианты ответа</h4>
+        <template v-for="(answer, aIndex) in question.answers" :key="aIndex">
+          <el-form-item class="answer-variant" label="Вариант ответа:">
+            <el-input v-model="question.answers[aIndex].text" size="medium"></el-input>
+          </el-form-item>
+
+          <h5 class="points-warning" v-if="Object.values(answer.values).length === 0">
+            Для выставления очков, вам нужно определить результаты теста
+          </h5>       
+          <h5 class="points-header" v-else>Очки варианта ответа:</h5>
+          <template v-for="(value, vIndex) in answer.values" :key="vIndex">
+            <el-form-item class="points-slider-item" :label="'Результат №'+ (vIndex+1) + ':'">
+              <el-slider tooltip-class="points-slider-tooltip" v-model="question.answers[aIndex].values[vIndex]" size="medium" show-input></el-slider>
+            </el-form-item>
+          </template>     
+        </template>
+        <p>{{computedQuestions}}</p>
+        <!-- <hr/> -->
+      </div>
+
+      <el-button class="plus-question" type="primary" icon="el-icon-plus" plain>вопрос</el-button> <!-- попробовать оставить + а при наведение анимацию и добавлять "вопрос" -->
+      
+      <h3 class="section-header">Результаты теста</h3>
+      <el-form-item label="Результат:">
+        <!-- <el-input v-model="question.query" size="medium"></el-input> -->
       </el-form-item>
       <!-- <el-form-item label="Activity time">
         <el-col :span="11">
@@ -69,7 +107,12 @@ import { getBusyStatus } from '@/config/api'
       return {
         newTest: {
           title: '',
-          type: 'someone'
+          type: 'someone',
+          questions: [
+            { query: '', answers: [ { text: '', values: [6] } ]  }
+          ],
+          results: ['Юра'],
+          keys: ['Y'],
         },
         isTitleOccupied: false,
         // rules: {
@@ -87,7 +130,37 @@ import { getBusyStatus } from '@/config/api'
       // }
     },
     computed: {
-
+      computedKeys(): Array<string | number> {
+        // debugger
+        return this.newTest.keys.map((key: string, i: number) => key || i)
+      },
+      // computedValues() {
+      //   debugger
+      //   return { M: 0 } || new Map([[this.computedKeys, this.computedKeys]])
+      // }
+      computedQuestions() {
+        debugger
+        console.log(this.newTest.questions.map(question => (
+          {
+            ...question,
+            answers: question.answers.map(answer => (
+              {
+                ...answer, // @ts-expect-error
+                values: Object.fromEntries(new Map([ 
+                  ...this.newTest.results.map(
+                    (result, i) => {
+                      debugger
+                      const a = [this.newTest.keys[i] || result, answer.values[i]]
+                      return a
+                    }
+                  )
+                ]))
+              }
+            ))
+          }
+        )))
+        return []
+      }
     },
     methods: { // TODO: такой дебаунс подходит для случаев когда компонент используется один раз. 
       titleOccupiedCheck: debounce(function(rule: any, value: string, callback: any) { // Так написано в доке
@@ -107,7 +180,51 @@ import { getBusyStatus } from '@/config/api'
     /* min-width: 180px; */
     text-align: center;
   }
+  .new-test-form {
+    display: flex;
+    flex-direction: column;
+  }
   .type-item {
     text-align: start;
+  }
+  .section-header {
+    margin: 60px 0 0;
+  }
+  .question-container {
+    margin: 10px 0;
+  }
+  .question-header {
+    margin: 60px 0 15px 125px;
+    text-align: start;
+  }
+  .answer-variants {
+    margin: 50px 0 -20px;
+  }
+  .answer-variant {
+    margin-top: 50px;
+  }
+  .points-warning {
+    color: red;
+    text-align: start;
+    margin: -5px 0 10px 125px;
+  }
+  .points-header {
+    text-align: start;
+    margin: 0 0 10px 125px;
+  }
+  .points-slider-item {
+    margin: 0;
+  }
+  .plus-question {
+    align-self: flex-start;
+    margin: 15px 0 10px 120px;
+  }
+  .el-slider__button::after {
+    color: red;
+  }
+</style>
+<style>
+  .points-slider-tooltip {
+    margin-bottom: -6px !important;
   }
 </style>
