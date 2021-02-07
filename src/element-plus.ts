@@ -71,8 +71,8 @@ import {
   ElSubmenu,
   // ElSwitch,
   // ElTabPane,
-  // ElTable,
-  // ElTableColumn,
+  ElTable,
+  ElTableColumn,
   // ElTabs,
   // ElTag,
   // ElTimePicker,
@@ -86,8 +86,8 @@ import {
   ElInfiniteScroll,
   // ElLoading,
   // ElMessage,
-  // ElMessageBox,
-  // ElNotification,
+  ElMessageBox,
+  ElNotification,
 } from 'element-plus'
 
 export const components = [
@@ -157,8 +157,8 @@ export const components = [
   ElSubmenu,
   // ElSwitch,
   // ElTabPane,
-  // ElTable,
-  // ElTableColumn,
+  ElTable,
+  ElTableColumn,
   // ElTabs,
   // ElTag,
   // ElTimePicker,
@@ -175,8 +175,8 @@ export const plugins = [
   ElInfiniteScroll,
   // ElLoading,
   // ElMessage,
-  // ElMessageBox,
-  // ElNotification,
+  ElMessageBox,
+  ElNotification,
 ] as Array<any>
 
 locale.use(lang)

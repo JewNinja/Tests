@@ -1,11 +1,14 @@
-export interface ITest {
-  _id: string,
+export interface INewTest {
   type: string,
-  title: 'Какая ты черепашка?',
+  title: string,
   questions: Array<IQuestion>,
   results: any,
   keys: Array<string>,
   name: string,
+}
+
+export interface ITest extends INewTest {
+  _id: string,
 }
 
 export interface IQuestion {

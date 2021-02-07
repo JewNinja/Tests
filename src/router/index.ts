@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import TestPage from '../views/TestPage.vue'
 import TestWalkthrough from '../views/TestWalkthrough/index.vue'
 import TestСreation from '../views/TestСreation/index.vue'
+import TestLibrary from '../views/TestLibrary/index.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -12,6 +13,15 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: '_create',
         component: TestСreation
+      },
+      {
+        path: '_edit',
+        name: 'TestEditing',
+        component: TestСreation
+      },
+      {
+        path: '_library',
+        component: TestLibrary
       },
       {
         path: ':pathMatch(.*)*',

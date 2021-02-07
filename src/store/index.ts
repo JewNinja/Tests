@@ -1,6 +1,6 @@
 import { createStore } from 'vuex'
-import { getTests } from '@/config/api'
-import { ITest } from '@/models'
+import { getTests, postTest, updateTest, deleteTest } from '@/config/api'
+import { INewTest, ITest } from '@/models'
 
 export default createStore({
   state: {
@@ -8,175 +8,53 @@ export default createStore({
       data: [] as Array<ITest>,
       isLoaded: false,
     }
-    // [
-    //   {
-    //     header: 'Какая ты черепашка?',
-    //     questions: [
-    //       { 
-    //         query: 'какой твой любимый цвет?',
-    //         answers: [
-    //           { text: 'Синий', key: 'L'},
-    //           { text: 'Красный', key: 'R'},
-    //           { text: 'Фиолетовый', key: 'D'},
-    //           { text: 'Жёлтый', key: 'M'},
-    //         ]
-    //       },
-    //       { 
-    //         query: 'какой вы?',
-    //         answers: [
-    //           { text: 'Агресивный', key: 'R'},
-    //           { text: 'Тщеславный', key: 'L'},
-    //           { text: 'Заумный', key: 'D'},
-    //           { text: 'Легкомысленный', key: 'M'},
-    //         ]
-    //       },
-    //       { 
-    //         query: 'Любите ли вы пиццу?',
-    //         answers: [
-    //           { text: 'Да', key: 'L'},
-    //           { text: 'Очень', key: 'R'},
-    //           { text: 'Конечно', key: 'D'},
-    //           { text: 'Безумно. Больше всего на свете!', key: 'M'},
-    //         ]
-    //       }
-    //     ],
-    //     results: {
-    //       L: 'Вы зазнайка Лео', 
-    //       R: 'Гордитесь, вы Раф!',
-    //       D: 'Неплохо. Ты Донни',
-    //       M: 'Мик-кИ!!',
-    //     },
-    //     keys: ['L', 'R', 'D', 'M'],
-    //     name: 'turtle'
-    //   },
-    //   {
-    //     header: 'Какой ты телепузик?',
-    //     questions: [
-    //       { 
-    //         query: 'Какая фигура тебе нравится больше?',
-    //         answers: [
-    //           { text: 'Треугольник', key: 'T'},
-    //           { text: 'Кружок', key: 'P'},
-    //           { text: 'Прямая', key: 'D'},
-    //           { text: 'Кривая', key: 'L'},
-    //         ],
-    //       },
-    //       { 
-    //         query: 'Какой цвет тебе нравится больше?',
-    //         answers: [
-    //           { text: 'Красный', key: 'P'},
-    //           { text: 'Жёлтый', key: 'L'},
-    //           { text: 'Зелёный', key: 'D'},
-    //           { text: 'Фиолетовый', key: 'T'},
-    //         ],
-    //       },
-    //       { 
-    //         query: 'Что бы вы выбрали?',
-    //         answers: [
-    //           { text: 'Пушистый цилинд', key: 'D'},
-    //           { text: 'Красную сумку', key: 'T'},
-    //           { text: 'Большой мячик', key: 'L'},
-    //           { text: 'Самокат', key: 'P'},
-    //         ],
-    //       },
-    //       { 
-    //         query: 'Какой вы?',
-    //         answers: [
-    //           { text: 'Вы самый старший в семье', key: 'T'},
-    //           { text: 'Вы самый упрямый', key: 'D'},
-    //           { text: 'Вы любите петь и танцевать', key: 'L'},
-    //           { text: 'Вы самый младший в семье', key: 'P'},
-    //         ],
-    //       },
-    //     ],
-    //     results: {
-    //       T: 'Тинки-Винки', 
-    //       D: 'Дипси',
-    //       L: 'Ля-Ля/Ла-Ла',
-    //       P: 'По',
-    //     },
-    //     keys: ['T', 'D', 'L', 'P'],
-    //     name: 'teletubbie'
-    //   },
-    //   {
-    //     header: 'Кто самая красивая и чудесная?',
-    //     questions: [
-    //       { 
-    //         query: 'Кто самая красивая и чудесная?',
-    //         answers: [
-    //           { text: 'Евушка', key: 'E'},
-    //         ],
-    //       },
-    //     ],
-    //     results: {
-    //       E: '❤ Вы угадали! Евушка сама пркрасная! ❤', 
-    //     },
-    //     keys: ['E'],
-    //     name: 'eva'
-    //   },
-    //   {
-    //     header: 'Кто самый крутой?',
-    //     questions: [
-    //       { 
-    //         query: 'Кто самый крутой?',
-    //         answers: [
-    //           { text: 'Я', key: 'I'},
-    //           { text: 'Юра', key: 'Y'},
-    //         ],
-    //       },
-    //     ],
-    //     results: {
-    //       E: 'Конечно Юра!', 
-    //       I: 'Конечно Юра!', 
-    //     },
-    //     keys: ['Y', 'I'],
-    //     name: 'yura'
-    //   },
-    // ],
-    // {
-    //   header: 'Какой у тебя тип телосложения?',
-    //   type: 'nearest',
-    //   questions: [
-    //     { 
-    //       query: 'какой вы?',
-    //       answers: [
-    //         { text: 'Я мезоморф', values: { Mez: 90, End: 5, Ek: 5, }},
-    //         { text: 'Я ендоморф', values: { Mez: 5, End: 9, Ek: 5, }},
-    //         { text: 'Я эктоморф', values: { Mez: 5, End: 5, Ek: 9, }},
-    //       ]
-    //     },
-    //     { 
-    //       query: 'какой вы?',
-    //       answers: [
-    //         { text: 'Красный!', values: { Mez: 6, End: 3, Ek: 1, }},
-    //         { text: 'Зелёный(', values: { Mez: 1, End: 1, Ek: 8, }},
-    //         { text: 'Оранжевый)', values: { Mez: 1, End: 7, Ek: 2, }},
-    //       ]
-    //     },
-    //   ],
-    //   results: {
-    //     Mez: 'Вы мезоморф', 
-    //     End: 'Вы ендоморф',
-    //     Ek: 'Вы эктоморф',
-    //   },
-    //   keys: ['Mez', 'End', 'Ek'],
-    //   name: 'constitution'
-    // },
   },
   mutations: {
     setTests(state, tests) {
-      debugger
       state.tests.data = tests.data
       state.tests.isLoaded = true
-    }
+    },
+    addTests(state, tests) {
+      state.tests.data = state.tests.data.concat(tests)
+      state.tests.isLoaded = true
+    },
+    changeTest(state, changedTest) {
+      state.tests.data = state.tests.data.map(test => test._id !== changedTest._id ? test : changedTest)
+      state.tests.isLoaded = true
+    },
+    removeTest(state, id) {
+      state.tests.data = state.tests.data.filter(test => test._id !== id)
+      state.tests.isLoaded = true
+    },
   },
   actions: {
     getTests({ commit }) {
-      debugger
       getTests().then(res => {
         commit('setTests', res.data)
       })
-    }
+    },
+    postTest: async function({ commit }, data: ITest) {
+      return await postTest(data).then(res => {
+        commit('addTests', [res.data])
+        return res
+      })
+    },
+    updateTest: async function({ commit }, {_id, ...data}: ITest) {
+      return await updateTest(_id, data).then(res => {
+        commit('changeTest', res.data)
+        return res
+      })
+    },
+    deleteTest: async function({ commit }, id: string) {
+      return await deleteTest(id).then(res => {
+        if (res.status === 200) {
+          commit('removeTest', id)
+          return true
+        } else {
+          return false
+        }
+      })
+    },
   },
   modules: {
   }

@@ -43,7 +43,6 @@
 import router from "@/router"
 import store from "@/store"
 import { defineComponent } from "vue"
-
   export default defineComponent({
     data() {
       return {

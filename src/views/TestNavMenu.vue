@@ -5,7 +5,7 @@
     </el-menu-item>
     <el-submenu index="/tests">
       <template #title>
-        <i class="el-icon-document-copy"></i>
+        <i class="el-icon-tickets"></i>
         <span>Tests</span>
       </template>
       <el-menu-item-group title="All">
@@ -16,9 +16,9 @@
       <i class="el-icon-plus"></i>
       <span>Create new test</span>
     </el-menu-item>
-    <el-menu-item index="3" disabled>
-      <i class="el-icon-edit"></i>
-      <span>Edit tests</span>
+    <el-menu-item index="/tests/_library">
+      <i class="el-icon-document-copy"></i>
+      <span>Test library</span>
     </el-menu-item>
   </el-menu>
 </template>
