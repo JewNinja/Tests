@@ -2,7 +2,7 @@
   <el-header>
     <el-menu :default-active="activeIndex" class="app_el-nav-topbar" mode="horizontal" router>
       <el-menu-item index="/tests">Тесты</el-menu-item>
-      <el-menu-item index="/other" disabled>Ещё что то</el-menu-item>
+      <el-menu-item index="/other">Ещё что то</el-menu-item>
     </el-menu>
   </el-header>
   <el-container>

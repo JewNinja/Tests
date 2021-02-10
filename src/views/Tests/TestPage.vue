@@ -43,7 +43,7 @@
   display: flex;
   flex-wrap: wrap;
 }
-.nav {
+/* .nav {
   display: inline-block;
   text-align: center; 
 }
@@ -53,5 +53,5 @@
 }
 .nav a.router-link-exact-active {
   color: #42b983;
-}
+} */
 </style>

@@ -25,7 +25,6 @@
 
 
 <script lang="ts">
-  import store from "@/store"
   import { defineComponent } from "vue"
 
   export default defineComponent({
@@ -44,7 +43,6 @@
     },
     methods: {
       toggleMenu() {
-        debugger
         this.isCollapsed = !this.isCollapsed
       }
     }

@@ -23,7 +23,10 @@
 
       <h3 class="section-header">Вопросы</h3>
       <div class="question-container" v-for="(question, qIndex) in newTest.questions" :key="qIndex">
-        <h4 class="question-header">Вопрос №{{qIndex+1}}</h4>
+        <div class="question-header-wraper">
+          <h4>Вопрос №{{qIndex+1}}</h4>
+          <el-button type="danger" size="small" icon="el-icon-close" plain circle @click="deleteQuestion(qIndex)" :disabled="newTest.questions.length < 2"/>
+        </div>
 
         <el-form-item label="Вопрос:" prop="question">
           <el-input v-model="newTest.questions[qIndex].query" size="medium"/>
@@ -31,8 +34,9 @@
 
         <h4 class="answer-variants">Варианты ответа</h4>
         <template v-for="(answer, aIndex) in question.answers" :key="aIndex">
-          <el-form-item class="answer-variant" label="Вариант ответа:" prop="answer">
+          <el-form-item class="answer-variant-wraper" label="Вариант ответа:" prop="answer">
             <el-input v-model="question.answers[aIndex].text" size="medium"/>
+            <el-button type="danger" size="small" icon="el-icon-close" plain circle @click="deleteAnswer(qIndex, aIndex)" :disabled="question.answers.length < 2"/>
           </el-form-item>
 
          
@@ -68,12 +72,17 @@
    
       <h3 class="section-header">Результаты теста</h3> <!-- валидациия на одинаковые ответы и/или ключи -->
       <template v-for="(result, rIndex) in newTest.results" :key="rIndex">
-        <el-form-item class="result" label="Результат:" prop="result">
-          <el-input v-model="newTest.results[rIndex]" size="medium"></el-input>
-        </el-form-item>
-        <el-form-item label="Ключ результата:">
-          <el-input v-model="newTest.keys[rIndex]" size="medium"></el-input>
-        </el-form-item>
+        <div class="result-and-btn-wraper">
+          <div class="result-wraper">
+            <el-form-item class="result" label="Результат:" prop="result">
+              <el-input v-model="newTest.results[rIndex]" size="medium"></el-input>
+            </el-form-item>
+            <el-form-item class="result-key" label="Ключ результата:">
+              <el-input v-model="newTest.keys[rIndex]" size="medium"></el-input>
+            </el-form-item>
+          </div>
+          <el-button  class="delete-result-btn" type="danger" size="small" icon="el-icon-close" plain circle @click="deleteResult(rIndex)" :disabled="newTest.results < 2"/>
+        </div>
       </template>
 
       <el-button class="plus-btn" type="primary" icon="el-icon-plus" plain @click="addResult">результат</el-button>
@@ -92,7 +101,7 @@
 <script lang="ts">
 import router from "@/router"
 import store from "@/store"
-import { defineComponent, ref } from "vue"
+import { defineComponent } from "vue"
 import { debounce } from 'vue-debounce'
 import { getBusyStatus } from '@/config/api'
 // import NearestAnswerScope from "./NearestAnswerScope.vue"
@@ -211,6 +220,7 @@ import { getBusyStatus } from '@/config/api'
           res?.data === 'free' ? callback() : callback(new Error(rule.message))
         })
       }, '500ms'),
+
       addQuestion() {
         this.newTest.questions.push(JSON.parse(JSON.stringify(questionPrototype)))
       },
@@ -220,6 +230,17 @@ import { getBusyStatus } from '@/config/api'
       addResult() {
         this.newTest.results.push('')
       },
+
+      deleteQuestion(qIndex: number) {
+        this.newTest.questions = this.newTest.questions.filter((_, i) => i !== qIndex)
+      },
+      deleteAnswer(qIndex: number, aIndex: number) {
+        this.newTest.questions[qIndex].answers = this.newTest.questions[qIndex].answers.filter((_, i) => i !== aIndex)
+      },
+      deleteResult(rIndex: number) {
+        this.newTest.results = this.newTest.results.filter((_, i) => i !== rIndex)
+      },
+
       changeAnswerValue(q: number, a: number, v: number, value: number) {
         this.newTest.questions[q].answers[a].values[v] = value
       },
@@ -278,14 +299,16 @@ import { getBusyStatus } from '@/config/api'
     flex-direction: column;
     margin: 10px 0;
   }
-  .question-header {
-    margin: 60px 0 15px 145px; /* TODO: сделать адоптивно */
-    text-align: start;
+  .question-header-wraper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 60px 15px 15px 145px; /* TODO: сделать адоптивно */
   }
   .answer-variants {
     margin: 30px 0 -20px;
   }
-  .answer-variant {
+  .answer-variant-wraper {
     margin-top: 50px;
   }
   .points-warning {
@@ -300,8 +323,21 @@ import { getBusyStatus } from '@/config/api'
   .points-slider-item {
     margin: 0;
   }
+  .result-and-btn-wraper {
+    display: flex;
+    align-items: center;
+  }
+  .result-wraper {
+    flex: 1;
+  }
   .result {
     margin: 15px 0;
+  }
+  .result-key {
+    margin-bottom: 15px;
+  }
+  .delete-result-btn {
+    margin: 0 15px 0 20px;
   }
   .plus-btn {
     align-self: flex-start;
@@ -318,7 +354,7 @@ import { getBusyStatus } from '@/config/api'
     color: red;
   }
 </style>
-<style>
+<style lang="scss">
   .points-slider-tooltip {
     margin-bottom: -6px !important;
   }
@@ -327,5 +363,17 @@ import { getBusyStatus } from '@/config/api'
   }
   .point-radio-btns .el-form-item__error {
     width: 100% !important;
+  }
+  .answer-variant-wraper {
+    .el-form-item__label {
+      line-height: 36px;
+    }
+    .el-form-item__content {
+      display: flex;
+      align-items: center;
+    }
+    .el-form-item__content .el-button {
+      margin: 0 15px 0 20px;
+    }
   }
 </style>

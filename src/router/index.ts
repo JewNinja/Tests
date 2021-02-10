@@ -1,8 +1,12 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import TestPage from '../views/TestPage.vue'
-import TestWalkthrough from '../views/TestWalkthrough/index.vue'
-import TestСreation from '../views/TestСreation/index.vue'
-import TestLibrary from '../views/TestLibrary/index.vue'
+import TestPage from '../views/Tests/TestPage.vue'
+import TestWalkthrough from '../views/Tests/TestWalkthrough/index.vue'
+import TestСreation from '../views/Tests/TestСreation/index.vue'
+import TestLibrary from '../views/Tests/TestLibrary/index.vue'
+import OtherPage from '../views/Other/OtherPage.vue'
+import Composition from '../views/Other/Composition/index.vue'
+import CustomDirectives from '../views/Other/CustomDirectives/index.vue'
+import Staff from '../views/Other/Staff/index.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -27,6 +31,25 @@ const routes: Array<RouteRecordRaw> = [
         path: ':pathMatch(.*)*',
         component: TestWalkthrough
       }
+    ]
+  },
+  {
+    path: '/other',
+    name: 'OtherPage',
+    component: OtherPage,
+    children: [
+      {
+        path: 'composition',
+        component: Composition
+      },
+      {
+        path: 'customdirectives',
+        component: CustomDirectives
+      },
+      {
+        path: 'staff',
+        component: Staff
+      },
     ]
   },
 ]
