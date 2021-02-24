@@ -11,7 +11,7 @@ export const axiosInstance = axios.create({
   withCredentials: true
 })
 
-export const getTests = (order = {}, filter = {}, page = 1, perPage = 100) => axiosInstance({
+export const getTests = (order = {}, filter = {}, page = 1, perPage = 200) => axiosInstance({
   method: 'get',
   url: '/tests',
   params: {
@@ -41,7 +41,7 @@ export const deleteTest = (id: string) => axiosInstance({
 
 export const getBusyStatus = (key: string, value: string) => axiosInstance({
   method: 'get',
-  url: '/busy',
+  url: '/tests/busy',
   params: {
     key,
     value,

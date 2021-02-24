@@ -3,7 +3,7 @@
 import { ITest } from '@/models'
 import { ref, computed } from 'vue'
 
-export default function useTests(tests: { value: Array<ITest>}) { // TODO: типизировать реф
+export default function useTests(tests: { value: Array<ITest> }) {
   const searchQuery = ref('')
   const testsMatchingSearchQuery = computed(() => {
     return tests.value.filter((test: ITest) => {

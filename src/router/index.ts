@@ -10,7 +10,7 @@ import Staff from '../views/Other/Staff/index.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/tests/:name?', // TODO: что то не то /tests/:name?
+    path: '/tests',
     name: 'TestPage',
     component: TestPage,
     children: [
@@ -28,10 +28,15 @@ const routes: Array<RouteRecordRaw> = [
         component: TestLibrary
       },
       {
-        path: ':pathMatch(.*)*',
+        path: ':name?',
         component: TestWalkthrough
+      },
+      {
+        path: ':pathMatch(.*)*',
+        redirect: { name: 'TestPage' }  // TODO: какое то фуфло
       }
-    ]
+    ],
+    redirect: { name: 'TestWalkthrough' }   // TODO: может можно сделать лучше
   },
   {
     path: '/other',
@@ -39,7 +44,7 @@ const routes: Array<RouteRecordRaw> = [
     component: OtherPage,
     children: [
       {
-        path: 'composition',
+        path: 'composition/:page?',
         component: Composition
       },
       {
@@ -50,8 +55,16 @@ const routes: Array<RouteRecordRaw> = [
         path: 'staff',
         component: Staff
       },
+      {
+        path: ':pathMatch(.*)*',
+        redirect: { name: 'OtherPage' }
+      }
     ]
   },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/tests' // TODO: не работает именованый маршрут
+  }
 ]
 
 const router = createRouter({

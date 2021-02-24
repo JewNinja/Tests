@@ -53,6 +53,7 @@ import { defineComponent } from "vue"
       onDelete(row: ITest) {
         // @ts-expect-error
         this.$confirm('Вы уверены что хотите удалить тест?', 'Удаление', {
+          customClass: 'modal-delete',
           confirmButtonText: 'Удалить',
           cancelButtonText: 'Отмена',
           confirmButtonClass: 'modal-delete-btn',
@@ -84,13 +85,25 @@ import { defineComponent } from "vue"
     text-align: center;
   }
 </style>
-<style>
-  .modal-delete-btn {
-    background: #F56C6C !important;
-    border-color: #F56C6C !important;
-  }
-  .modal-delete-btn:hover {
-    background: #F78989 !important;
-    border-color: #F78989 !important;
+<style lang="scss">
+  .is-message-box {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+  .modal-delete {
+    box-shadow: 0 0 5px rgba(0,0,0,0.3) !important;
+
+    .modal-delete-btn {
+        background: #F56C6C !important;
+        border-color: #F56C6C !important;
+      }
+      .modal-delete-btn:hover {
+        background: #F78989 !important;
+        border-color: #F78989 !important;
+      }
+    }
   }
 </style>

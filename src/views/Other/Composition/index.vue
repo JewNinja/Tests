@@ -2,7 +2,7 @@
   <div>
     <hr>
     <div>
-      Номер страницы:
+      Поиск:
       <input v-model="searchQuery"/>
     </div>
     <hr>
@@ -18,8 +18,7 @@ import useTestTitleSearch from './useTestTitleSearch'
 
   export default defineComponent({
     setup(props) {
-      const propss = { page: 1 } // TODO: переделать на что нибудь
-      const { page } = toRefs(propss)
+      const page = 1
 
       const { tests, getTests } = useTests(page)
       const { searchQuery, testsMatchingSearchQuery } = useTestTitleSearch(tests)

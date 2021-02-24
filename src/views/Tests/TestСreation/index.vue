@@ -9,7 +9,7 @@
         <!-- <el-input v-debounce:500="titleOccupiedCheck" v-model="newTest.title" size="medium"></el-input> -->
       </el-form-item>
 
-      <el-form-item label="Url путь">
+      <el-form-item label="Url путь" prop="name">
         <el-input v-model="newTest.name" size="medium" placeholder="Не обязательно"></el-input>
         <!-- <el-input v-debounce:500="titleOccupiedCheck" v-model="newTest.title" size="medium"></el-input> -->
       </el-form-item>
@@ -90,7 +90,7 @@
       <!-- сделать подсказку с "Например" -->
 
       <p>{{JSON.parse(JSON.stringify(computedQuestions))}}</p>
-      <el-button class="create-test-btn" type="primary" icon="el-icon-plus" @click="onCreateTest('form')">
+      <el-button class="create-test-btn" type="primary" icon="el-icon-plus" @click="onCreateTest('form')" :loading="isCreating">
         {{isNewTest ? 'Создать тест' : 'Сохранить изменения'}}
       </el-button>  <!-- дизейблить на время запроса -->
     </el-form>
@@ -104,6 +104,7 @@ import store from "@/store"
 import { defineComponent } from "vue"
 import { debounce } from 'vue-debounce'
 import { getBusyStatus } from '@/config/api'
+import { ITest } from "@/models"
 // import NearestAnswerScope from "./NearestAnswerScope.vue"
 
   const answerPrototype = { text: '', values: [] as Array<number> }
@@ -114,7 +115,7 @@ import { getBusyStatus } from '@/config/api'
     type: 'someone',
     questions: [ questionPrototype ],
     results: [''],
-    keys: [],
+    keys: [] as Array<string>,
   }
 
   type newTestType = typeof initNewTest;
@@ -124,13 +125,18 @@ import { getBusyStatus } from '@/config/api'
     data() {
       return {
         isNewTest: true,
+        originTest: null as ITest | null,
         newTest: JSON.parse(JSON.stringify(initNewTest)) as newTestType,
-        isTitleOccupied: false,
+        isCreating: false,
         rules: {
           title: [
             { required: true, message: 'is required' },
             { min: 2, max: 50, message: 'Length should be 2 to 50', trigger: 'blur' },
-            { validator: this.titleOccupiedCheck, message: 'Такое название уже занято -няЪъъ', trigger: ['change', 'blur'] }
+            { validator: this.debouncedOccupiedCheck, message: 'Такое название уже занято -няЪъъ', trigger: ['change', 'blur'] }
+          ],
+          name: [
+            // { max: 20, message: 'Max length is 20', trigger: 'blur' },
+            // { validator: this.debouncedOccupiedCheck, message: 'Уже занято', trigger: ['change', 'blur'] }
           ],
           question: [
             // { required: true, message: 'is required', trigger: 'blur' },
@@ -148,11 +154,8 @@ import { getBusyStatus } from '@/config/api'
       }
     },
     created() {
-      const editTest = store.state.tests.data.find(test => test._id === this.$route.params.id)
+      const editTest = store.state.tests.data.find(test => test._id === this.$route.params.id) as ITest
       if (editTest) {
-        // const resultEntries = Object.entries(editTest?.results)
-        // const resultKeys = resultEntries.map(e => e[0])
-        // const resultValues = resultEntries.map(e => e[1])
 
         const newTest = {
           ...editTest,
@@ -161,22 +164,28 @@ import { getBusyStatus } from '@/config/api'
             answers: question.answers.map(answer => ({
               ...answer,  
               values: editTest.type === 'someone'
-                ? [editTest.keys.indexOf(Object.keys(answer.values)[0])] // @ts-expect-error
-                : editTest.keys.map(key => answer.values[key]) // TODO: значения почему то хоть здесь и есть, но после присваивания и рендера пропадают
+                ? [editTest.keys.indexOf(Object.keys(answer.values)[0])]
+                : editTest.keys.map(key => answer.values[key])
             }))
           })),
           results: editTest.keys.map(key => editTest.results[key]),
         };
-         // @ts-expect-error
+
+        this.originTest = editTest
         this.newTest = newTest
         this.isNewTest = false
       } else {
-        // TODO: сменить _create
+        router.replace('/tests/_create')
       }
     },
     watch: {
       'newTest.type': function () {
         this.newTest.questions.forEach(question => question.answers.forEach((answer: any) => answer.values = []))
+      },
+      $route(to, from) {
+        this.newTest = JSON.parse(JSON.stringify(initNewTest))
+        // @ts-expect-error
+        this.$refs['form'].resetFields();
       }
     },
     computed: {
@@ -205,20 +214,30 @@ import { getBusyStatus } from '@/config/api'
           }
         ))
       },
-      // @ts-expect-error
-      computedResults() {
-        return Object.fromEntries(new Map( // @ts-expect-error
+      computedResults(): Record<string, string> {
+        return Object.fromEntries(new Map(
           this.newTest.results.map((result: string, i: number) => [this.newTest.keys[i] || result, result])
         ))
       }
     },
-    methods: { // TODO: такой дебаунс подходит для случаев когда компонент используется один раз. 
-      titleOccupiedCheck: debounce(function(rule: any, value: string, callback: any) { // Так написано в доке 
-      // @ts-expect-error
-        if (!this.isNewTest) callback()
-        getBusyStatus('title', value).then(res => {
-          res?.data === 'free' ? callback() : callback(new Error(rule.message))
+    methods: {
+      occupiedCheck: async function(key: string, value: string) {
+        return await getBusyStatus(key, value).then(res => {
+          return Promise.resolve(res.data)
+        }).catch(err => {
+          return Promise.reject(err)
         })
+      },
+      // такой дебаунс подходит для случаев когда компонент используется один раз. 
+      debouncedOccupiedCheck: debounce(function(rule: any, value: string, callback: any) { // Так написано в доке
+        // @ts-expect-error 
+        if (!this.isNewTest && this.originTest && this.originTest[rule.field] === value) {
+          callback()
+        } else {
+          getBusyStatus(rule.field, value).then(res => {
+            res?.data === 'free' ? callback() : callback(new Error(rule.message))
+          })
+        }
       }, '500ms'),
 
       addQuestion() {
@@ -245,23 +264,45 @@ import { getBusyStatus } from '@/config/api'
         this.newTest.questions[q].answers[a].values[v] = value
       },
       onCreateTest(formName: string) {
-           // @ts-expect-error 
-        this.$refs[formName].validate((valid: boolean) => {
-          if (valid) {
+        this.isCreating = true
+           // @ts-expect-error
+        this.$refs[formName].validate(async (valid: boolean) => {
+          if (valid || 2 *2) {
+            let newTestName = this.newTest.name
+            if (!this.newTest.name) {
+              const searchName = (): any => {
+                const randomName = '_' + (Math.random() * 1e10).toFixed()
+                return this.occupiedCheck('name', randomName).then(res => {
+                  if (res === 'busy') return searchName()
+                  if (res === 'free') return randomName
+                  return ''
+                })
+              }
+
+              newTestName = await searchName()
+            }
+
+            if (!newTestName) {
+              this.isCreating = false
+              return console.log('error submit((');
+            }
+
             store.dispatch(this.isNewTest ? 'postTest' : 'updateTest', {
               ...this.newTest,
-              name: this.newTest.name || ('_' + Math.random() * 1e20), // TODO: решить по другому
+              name: newTestName,
               results: this.computedResults,
               questions: this.computedQuestions
             }).then((res: any) => {
-              if (res.status === 200) router.push({ path: `/tests/_library` }) 
+              if ([200, 201].includes(res?.status)) router.push({ path: `/tests/_library` }) 
               else console.log('Error');
               this.newTest = JSON.parse(JSON.stringify(initNewTest))
               this.resetForm(formName)
             }).finally(() => {
-              console.log('Submit!!');  // TODO: пендин до этого времени
+              this.isCreating = false
+              console.log('Submit!!');
             })
           } else {
+            this.isCreating = false
             console.log('error submit((');
           }
         });
@@ -303,7 +344,7 @@ import { getBusyStatus } from '@/config/api'
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: 60px 15px 15px 145px; /* TODO: сделать адоптивно */
+    margin: 60px 15px 15px 145px; /* TODO: сделать адаптивно */
   }
   .answer-variants {
     margin: 30px 0 -20px;

@@ -17,10 +17,9 @@
 <script>
   export default {
     data() {
-      // let a = window.location.pathname.match(/\/\w*/)[0]
-      // debugger
       return {
-        activeIndex: window.location.pathname.match(/\/\w*/)[0], // TODO: сделать как то получше 
+        activeIndex: window.location.pathname.match(/\/\w*/)[0],
+        // activeIndex: this.$router.currentRoute.value.matched[0]?.path, // через эту штуку путь с /:name
       };
     },
   }

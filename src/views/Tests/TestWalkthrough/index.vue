@@ -43,6 +43,7 @@
 import router from "@/router"
 import store from "@/store"
 import { defineComponent } from "vue"
+
   export default defineComponent({
     data() {
       return {
@@ -53,7 +54,7 @@ import { defineComponent } from "vue"
     },
     computed: {
       currentTest() {
-        return store.state.tests.data.find(test => '/tests/' + test.name === router.currentRoute.value.path) // || store.state.tests.data[0] // TODO: '/tests'
+        return store.state.tests.data.find(test => router.currentRoute.value.path.includes('/tests/' + test.name))
       },
       isLoaded() {
         return store.state.tests.isLoaded
@@ -87,17 +88,10 @@ import { defineComponent } from "vue"
 
         } else if (this.currentTest?.type === 'nearest') {
           
-          return Object.entries(results) // @ts-expect-error
-            .map((result: any) => this.currentTest?.results[result[0]] + ': ' + result[1] / this.currentTest?.questions.length + '%\n')
+          return Object.entries(results) 
+            .map((result: any) => this.currentTest?.results[result[0]] + ': ' + result[1] / (this.currentTest?.questions?.length||1) + '%\n')
             .join('')              
         }
-
-        // const calculatedKey = Object.entries(this.answers.reduce((acc: any, answer) => {
-        //   acc[answer] = (acc[answer] || 0) + 1;
-        //   return acc;
-        // }, {})).reduce((max: any, n: any) => n[1] > max[1] ? n : max)[0];
-        // // @//ts-expect-error
-        // return this.currentTest?.results[calculatedKey]; // TODO
       },
       restart() {
         this.step = 0;
@@ -117,7 +111,6 @@ import { defineComponent } from "vue"
   .card-container {
     margin: 0 10px;
     flex: 1;
-    min-width: 180px; /* TODO: может не нужно */
     text-align: center;
   }
   .query {
