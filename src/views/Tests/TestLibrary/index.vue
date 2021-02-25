@@ -40,7 +40,7 @@ import { defineComponent } from "vue"
       }
     },
     computed: {
-      tests() {
+      tests() { 
         return store.state.tests
       },
     },
@@ -59,7 +59,7 @@ import { defineComponent } from "vue"
           confirmButtonClass: 'modal-delete-btn',
           type: 'warning'
         }).then(() => {
-          store.dispatch('deleteTest', row._id).then(res => {
+          store.dispatch('tests/deleteTest', row._id).then(res => {
           if (res === false) {
             // @ts-expect-error
             this.$notify.error({

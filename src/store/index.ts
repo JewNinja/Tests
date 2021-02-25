@@ -1,61 +1,67 @@
 import { createStore } from 'vuex'
-import { getTests, postTest, updateTest, deleteTest } from '@/config/api'
-import { INewTest, ITest } from '@/models'
+import { loginRequest, signupRequest } from '@/config/api'
+import tests from './tests'
+import { axiosInstance } from '../config/api'
 
 export default createStore({
   state: {
-    tests: {
-      data: [] as Array<ITest>,
-      isLoaded: false,
+    app: {
+      isInit: false,
     }
   },
   mutations: {
-    setTests(state, tests) {
-      state.tests.data = tests.data
-      state.tests.isLoaded = true
+    setInit(state: any, status: boolean) {
+      state.app.isInit = status
     },
-    addTests(state, tests) {
-      state.tests.data = state.tests.data.concat(tests)
-      state.tests.isLoaded = true
-    },
-    changeTest(state, changedTest) {
-      state.tests.data = state.tests.data.map(test => test._id !== changedTest._id ? test : changedTest)
-      state.tests.isLoaded = true
-    },
-    removeTest(state, id) {
-      state.tests.data = state.tests.data.filter(test => test._id !== id)
-      state.tests.isLoaded = true
+    setLogin(state: any, status: boolean) {
+      state.app.isLogin = status
     },
   },
   actions: {
-    getTests({ commit }) {
-      getTests().then(res => {
-        commit('setTests', res.data)
-      })
+    initApp({ commit }) {
+      if (localStorage.getItem('token')) {
+        commit('setInit', true)
+        commit('setLogin', true)
+      } else {
+        commit('setInit', true)
+        commit('setLogin', false)
+      }
     },
-    postTest: async function({ commit }, data: ITest) {
-      return await postTest(data).then(res => {
-        commit('addTests', [res.data])
-        return res
-      })
-    },
-    updateTest: async function({ commit }, {_id, ...data}: ITest) {
-      return await updateTest(_id, data).then(res => {
-        commit('changeTest', res.data)
-        return res
-      })
-    },
-    deleteTest: async function({ commit }, id: string) {
-      return await deleteTest(id).then(res => {
-        if (res.status === 200) {
-          commit('removeTest', id)
+    async loginRequest({ commit }, { email, password }) {
+      return await loginRequest(email, password).then(res => {
+        if (res?.status === 201) {
+          axiosInstance.defaults.headers.common.Authorization = `Bearer ${res.data.access_token}`
+          localStorage.setItem('token', res.data.access_token)
+          localStorage.setItem('refresh_token', res.data.refresh_token)
+          localStorage.setItem('expires_in', res.data.expiresIn)
+          commit('setLogin', true)
           return true
-        } else {
-          return false
-        }
+        } 
+        return false
+      })
+    },
+    logout({ commit }) {
+      axiosInstance.defaults.headers.common.Authorization = null
+      localStorage.removeItem('token')
+      localStorage.removeItem('refresh_token')
+      localStorage.removeItem('expires_in')
+      commit('setLogin', false)
+    },
+    async signupRequest({ commit }, { email, password }) {
+      return await signupRequest(email, password).then(res => {
+        if (res?.status === 201) {
+          axiosInstance.defaults.headers.common.Authorization = `Bearer ${res.data.access_token}`
+          localStorage.setItem('token', res.data.access_token)
+          localStorage.setItem('refresh_token', res.data.refresh_token)
+          localStorage.setItem('expires_in', res.data.expiresIn)
+          commit('setLogin', true)
+          return true
+        } 
+        return false
       })
     },
   },
   modules: {
+    tests,
   }
 })

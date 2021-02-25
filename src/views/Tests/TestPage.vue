@@ -18,12 +18,12 @@
       }
     },
     computed: {
-      tests() {
+      tests() { // @ts-ignore
         return store.state.tests
       },
     },
     beforeCreate() { // TODO: правильно ли так рано запрашивать? Где вообще надо запрашивать? И как раньше запросить?
-      store.dispatch('getTests', 1);
+      store.dispatch('tests/getTests', 1);
     },
     components: {
       TestNavMenu,

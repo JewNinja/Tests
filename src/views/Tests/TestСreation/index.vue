@@ -154,7 +154,8 @@ import { ITest } from "@/models"
       }
     },
     created() {
-      const editTest = store.state.tests.data.find(test => test._id === this.$route.params.id) as ITest
+      // @ts-ignore
+      const editTest = store.state.tests.data.find((test: ITest) => test._id === this.$route.params.id) as ITest
       if (editTest) {
 
         const newTest = {
@@ -287,7 +288,7 @@ import { ITest } from "@/models"
               return console.log('error submit((');
             }
 
-            store.dispatch(this.isNewTest ? 'postTest' : 'updateTest', {
+            store.dispatch(this.isNewTest ? 'tests/postTest' : 'tests/updateTest', {
               ...this.newTest,
               name: newTestName,
               results: this.computedResults,

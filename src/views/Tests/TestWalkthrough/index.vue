@@ -53,10 +53,10 @@ import { defineComponent } from "vue"
       }
     },
     computed: {
-      currentTest() {
+      currentTest() { // @ts-ignore
         return store.state.tests.data.find(test => router.currentRoute.value.path.includes('/tests/' + test.name))
       },
-      isLoaded() {
+      isLoaded() { // @ts-ignore
         return store.state.tests.isLoaded
       }
     },
@@ -72,7 +72,7 @@ import { defineComponent } from "vue"
         this.currentAnswer = this.answers.pop() || null
         this.step--
       },
-      calcResult() {
+      calcResult() { // @ts-ignore
         const values = this.currentTest?.questions.map((question, index) => question.answers[this.answers[index]].values)
         const results = values?.reduce((acc: any, curr: Record<string, any>) => {
           Object.entries(curr).forEach(optionPoints => {
