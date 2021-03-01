@@ -79,4 +79,7 @@ import LoginPage from "./views/LoginPage";
     right: 10px;
   }
 }
+.el-card__body {
+  padding: 20px 5vw !important;
+}
 </style>

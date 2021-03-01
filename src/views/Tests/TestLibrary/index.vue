@@ -2,9 +2,11 @@
   <el-card class="card-container">
     <h2>Тестотека</h2>
     <!-- <p v-for="(test, tIndex) in tests.data" :key="tIndex">{{test.title}}</p> -->
-    <el-table
-      :data="tests.data.filter(test => !search || test.title.toLowerCase().includes(search.toLowerCase()) || test.name.toLowerCase().includes(search.toLowerCase()))"
-      style="width: 800px">
+    <el-table :data="tests.data.filter(test => {
+      return !search
+        || test.title.toLowerCase().includes(search.toLowerCase())
+        || test.name.toLowerCase().includes(search.toLowerCase())
+    })">
       <el-table-column
         label="Название"
         prop="title">
