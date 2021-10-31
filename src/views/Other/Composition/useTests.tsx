@@ -1,7 +1,7 @@
 // обычно составные куски валяются в src/composables/ 
 
 import { ref, onMounted, watch, Ref } from 'vue'
-import { getTests as getTestsFromApi } from '@/config/api'
+import { getTests as getTestsFromApi } from '@/api/tests'
 
 export default function useTests(page: Ref<number>) {
   const tests = ref([] as Array<number>)

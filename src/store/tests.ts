@@ -1,5 +1,5 @@
 import { ITest } from "@/models";
-import { getTests, postTest, updateTest, deleteTest } from '@/config/api'
+import { getTests, postTest, updateTest, deleteTest } from '@/api/tests'
 
 export default {
   namespaced: true,

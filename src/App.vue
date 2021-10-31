@@ -5,6 +5,7 @@
       <el-header class="header">
         <el-menu :default-active="activeIndex" class="app_el-nav-topbar" mode="horizontal" router>
           <el-menu-item index="/tests">Тесты</el-menu-item>
+          <el-menu-item index="/blackbox">Чёрный</el-menu-item>
           <el-menu-item index="/other">Ещё что то</el-menu-item>
         </el-menu>
         <el-link class="logout-btn" type="warning" href="#" @click="onLogout">Logout</el-link>
@@ -57,11 +58,19 @@ import LoginPage from "./views/LoginPage";
 </script>
 
 <style lang="scss">
+body {
+  --body-offset: 8px;
+
+  height: calc(100vh - var(--body-offset) * 2);
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 .app_el-nav-topbar {
   display: flex;

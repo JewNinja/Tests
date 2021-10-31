@@ -103,7 +103,7 @@ import router from "@/router"
 import store from "@/store"
 import { defineComponent } from "vue"
 import { debounce } from 'vue-debounce'
-import { getBusyStatus } from '@/config/api'
+import { getBusyStatus } from '@/api/tests'
 import { ITest } from "@/models"
 // import NearestAnswerScope from "./NearestAnswerScope.vue"
 
@@ -267,7 +267,7 @@ import { ITest } from "@/models"
       onCreateTest(formName: string) {
         this.isCreating = true
            // @ts-expect-error
-        this.$refs[formName].validate(async (valid: boolean) => {
+        this.$refs[formName].validate(async (valid: boolean) => {  // TODO: сделать валидацию заполнения хотя бы одного вопроса и ответов
           if (valid || 2 *2) {
             let newTestName = this.newTest.name
             if (!this.newTest.name) {

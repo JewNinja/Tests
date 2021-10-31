@@ -1,3 +1,11 @@
+export interface IJwtTokenData {
+  email: string;
+  exp: number;
+  iat: number;
+  roles: Array<string>;
+  userId: string;
+}
+
 export interface INewTest {
   type: string;
   title: string;
@@ -20,4 +28,3 @@ export interface IAnswer {
   text: string;
   values: Record<string, number>;
 }
-

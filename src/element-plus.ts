@@ -82,7 +82,7 @@ import {
   // ElTooltip,
   // ElTransfer,
   // ElTree,
-  // ElUpload,
+  ElUpload,
   ElInfiniteScroll,
   // ElLoading,
   // ElMessage,
@@ -168,7 +168,7 @@ export const components = [
   // ElTooltip,
   // ElTransfer,
   // ElTree,
-  // ElUpload,
+  ElUpload,
 ] as Array<any>
 
 export const plugins = [

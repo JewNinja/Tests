@@ -3,6 +3,7 @@ import TestPage from '../views/Tests/TestPage.vue'
 import TestWalkthrough from '../views/Tests/TestWalkthrough/index.vue'
 import TestСreation from '../views/Tests/TestСreation/index.vue'
 import TestLibrary from '../views/Tests/TestLibrary/index.vue'
+import BlackboxPage from '../views/Blackbox/BlackboxPage.vue'
 import OtherPage from '../views/Other/OtherPage.vue'
 import Composition from '../views/Other/Composition/index.vue'
 import CustomDirectives from '../views/Other/CustomDirectives/index.vue'
@@ -37,6 +38,18 @@ const routes: Array<RouteRecordRaw> = [
       }
     ],
     redirect: { name: 'TestWalkthrough' }   // TODO: может можно сделать лучше
+  },
+  {
+    path: '/blackbox',
+    name: 'BlackboxPage',
+    component: BlackboxPage,
+    children: [
+      {
+        path: '',  // TODO: какое то фуфло
+        component: BlackboxPage
+      },
+    ],
+    redirect: { name: 'BlackboxPage' }   // TODO: может можно сделать лучше
   },
   {
     path: '/other',

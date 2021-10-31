@@ -4,8 +4,11 @@ import router from './router'
 import store from './store'
 import { components, plugins } from './element-plus'
 import vueDebounce from 'vue-debounce'
+import { setApolloProvider } from './api/config/apollo'
 
-const app = createApp(App)
+export const app = createApp(App)
+
+setApolloProvider()
 
 components.forEach(component => app.component(component.name, component))
 plugins.forEach(plugin => app.use(plugin))
