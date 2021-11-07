@@ -2,10 +2,11 @@ import axios from 'axios'
 import { ElNotification } from 'element-plus'
 import { refreshTokenRequest } from '../auth'
 import { setApolloProvider } from './apollo'
+import { GraphQLResponseErrorType } from './types'
 
 export const axiosInstance = axios.create({
   timeout: 20000,
-  baseURL: 'http://localhost:3003/', // TODO: вынести
+  baseURL: process.env.VUE_APP_REST_API_ENDPOINT,
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -17,7 +18,7 @@ axiosInstance.defaults.headers.common.Authorization = `Bearer ${window.localStor
 
 axiosInstance.interceptors.response.use(
   async (response) => {
-    if (response?.data?.errors?.some((e: Record<string, any>) => e.extensions.response.statusCode === 401)  ) {
+    if (response?.data?.errors?.some((e: GraphQLResponseErrorType) => e.extensions.response.statusCode === 401)  ) {
       const refreshToken = localStorage.getItem('refresh_token')
       localStorage.removeItem('token')
       localStorage.removeItem('refresh_token')

@@ -2,7 +2,7 @@ module.exports = {
   client: {
     service: {
       name: 'nest-test',
-      url: 'http://localhost:3003/graphql',
+      url: process.env.VUE_APP_GRAPHQL_ENDPOINT,
     },
     // Files processed by the extension
     includes: [

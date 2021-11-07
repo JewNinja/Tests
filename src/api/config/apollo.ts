@@ -2,13 +2,12 @@ import { app } from '@/main';
 import { ApolloClient, createHttpLink, InMemoryCache, NormalizedCacheObject } from '@apollo/client/core'
 import { setContext } from '@apollo/client/link/context';
 import { createApolloProvider as createProvider } from '@vue/apollo-option'
-import gql from 'graphql-tag'
 
 export let apolloClient: ApolloClient<NormalizedCacheObject>;
 
 export function setApolloProvider(newHeaders = {}) {
   const httpLink = createHttpLink({
-    uri: 'http://localhost:3003/graphql', // TODO: вынести
+    uri: process.env.VUE_APP_GRAPHQL_ENDPOINT,
   });
 
   const authLink = setContext((_, { headers }) => {
@@ -25,7 +24,7 @@ export function setApolloProvider(newHeaders = {}) {
 
   apolloClient = new ApolloClient({
     link: authLink.concat(httpLink),
-    // uri: 'http://localhost:3003/graphql',
+    // uri: process.env.VUE_APP_GRAPHQL_ENDPOINT,
     cache: new InMemoryCache(),
   });
 

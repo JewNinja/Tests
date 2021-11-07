@@ -180,3 +180,8 @@ export const plugins = [
 ] as Array<any>
 
 locale.use(lang)
+
+export type EPRuleType = {
+  field: string,
+  message: string
+}

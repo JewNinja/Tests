@@ -7,20 +7,20 @@
         class="blackbox"
         drag
         :disabled="isFetching"
-        action="http://localhost:3003/graphql"     
+        action="processEnv.VUE_APP_GRAPHQL_ENDPOINT"     
         :show-file-list="false"
         :http-request="onPictureUpload"
         :on-success="onUploadSuccess"
       >
         {{isFetching ? 'Loading...' : '?'}}
-      </el-upload> <!-- TODO: убрать урл в константы -->
+      </el-upload>
     </div>
     <div v-if="is_used" class="drops">
       <img
         v-for="(name, index) in pictures.slice(0, 4)"
         :key="index"
         :class="{ drop: true, [`drop-${++index}`]: true }"
-        :src="`http://localhost:3003/static/images/blackbox/${name}`"
+        :src="`${processEnv.VUE_APP_REST_API_ENDPOINT}/static/images/blackbox/${name}`"
       />
     </div>
   </div>
@@ -29,15 +29,14 @@
 
 <script lang="ts">
   import { defineComponent } from "vue"
+  import { ElNotification } from 'element-plus'
   import store from "@/store"
 
   export default defineComponent({
-    props: {
-      // TODO: заполнить
-    },
     data() {
       return {
-        isFetching: false
+        isFetching: false,
+        processEnv: process.env
       }
     },
     beforeCreate() {
@@ -55,42 +54,46 @@
     },
     methods: {
       async onPictureUpload({file}: {file: Blob}) {
-        const isJPG = file.type === 'image/jpeg'
+        const isIncorrectFormat = file.type !== 'image/jpeg' && file.type !== 'image/png'
         const isTooBig = file.size / 1024 / 1024 > 10
 
-        if (!isJPG) {
-          // this.$message.error('Avatar picture must be JPG format!')
-          alert('Avatar picture must be JPG format!')
+        if (isIncorrectFormat) {
+          ElNotification({
+            type: 'warning',
+            title: 'Incorrect format',
+            message: 'Avatar picture must be JPG or PNG format!'
+          });
+          return false
         }
         if (isTooBig) {
-          // this.$message.error('Avatar picture size can not exceed 2MB!')
-          alert('Avatar picture size can not exceed 10MB!')
-        }
-        if (isJPG && !isTooBig) {
-          this.isFetching = true;
-
-          const formData = new FormData();
-
-          const query = `mutation AddBlackboxPicture($file:Upload!) {
-            addBlackboxPicture(file:$file)
-          }`;
-
-          const operations = JSON.stringify({ query, variables: { file: null } });
-          formData.append("operations", operations);
-
-          const map = {
-              "0": ["variables.file"]
-          };
-
-          formData.append("map", JSON.stringify(map));
-
-          formData.append("0", file);
-
-          await store.dispatch('blackbox/postBlackboxPicture', formData);
-          // await postBlackboxPicture(formData)
+          ElNotification({
+            type: 'warning',
+            title: 'File size is too large',
+            message: 'Avatar picture size can not exceed 10MB!'
+          });
+          return false
         }
 
-        return false
+        this.isFetching = true;
+
+        const formData = new FormData();
+
+        const query = `mutation AddBlackboxPicture($file:Upload!) {
+          addBlackboxPicture(file:$file)
+        }`;
+
+        const operations = JSON.stringify({ query, variables: { file: null } });
+        formData.append("operations", operations);
+
+        const map = {
+            "0": ["variables.file"]
+        };
+
+        formData.append("map", JSON.stringify(map));
+
+        formData.append("0", file);
+
+        await store.dispatch('blackbox/postBlackboxPicture', formData);
       },
       onUploadSuccess() {
         this.isFetching = false;

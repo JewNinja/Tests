@@ -42,7 +42,7 @@ import { defineComponent } from "vue"
       }
     },
     computed: {
-      tests() { 
+      tests() { // @ts-ignore
         return store.state.tests
       },
     },

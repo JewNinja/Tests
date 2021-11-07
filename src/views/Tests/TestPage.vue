@@ -18,7 +18,7 @@
       }
     },
     computed: {
-      tests() {
+      tests() { // @ts-ignore
         return store.state.tests
       },
     },

@@ -77,7 +77,7 @@
             <el-form-item class="result" label="Результат:" prop="result">
               <el-input v-model="newTest.results[rIndex]" size="medium"></el-input>
             </el-form-item>
-            <el-form-item class="result-key" label="Ключ результата:">
+            <el-form-item class="result-key" label="Ключ результата:"> <!-- может стоит это убрать -->
               <el-input v-model="newTest.keys[rIndex]" size="medium"></el-input>
             </el-form-item>
           </div>
@@ -89,10 +89,10 @@
 
       <!-- сделать подсказку с "Например" -->
 
-      <p>{{JSON.parse(JSON.stringify(computedQuestions))}}</p>
+      <!-- <p>{{JSON.parse(JSON.stringify(computedQuestions))}}</p> -->
       <el-button class="create-test-btn" type="primary" icon="el-icon-plus" @click="onCreateTest('form')" :loading="isCreating">
         {{isNewTest ? 'Создать тест' : 'Сохранить изменения'}}
-      </el-button>  <!-- дизейблить на время запроса -->
+      </el-button>
     </el-form>
   </el-card>
 </template>
@@ -105,6 +105,7 @@ import { defineComponent } from "vue"
 import { debounce } from 'vue-debounce'
 import { getBusyStatus } from '@/api/tests'
 import { ITest } from "@/models"
+import { EPRuleType } from "@/element-plus"
 // import NearestAnswerScope from "./NearestAnswerScope.vue"
 
   const answerPrototype = { text: '', values: [] as Array<number> }
@@ -148,8 +149,8 @@ import { ITest } from "@/models"
             // { required: true, message: 'is required' },
           ],
           result: [
-            // { required: true, message: 'is required' },
-          ],
+            // { required: true, message: 'is required' },  // TODO: валидация почему то не работает так как надо
+          ],                                                // так же надо валидировать что бы небыло одинаковых результатов
         },
       }
     },
@@ -181,7 +182,7 @@ import { ITest } from "@/models"
     },
     watch: {
       'newTest.type': function () {
-        this.newTest.questions.forEach(question => question.answers.forEach((answer: any) => answer.values = []))
+        this.newTest.questions.forEach(question => question.answers.forEach(answer => answer.values = []))
       },
       $route(to, from) {
         this.newTest = JSON.parse(JSON.stringify(initNewTest))
@@ -230,7 +231,7 @@ import { ITest } from "@/models"
         })
       },
       // такой дебаунс подходит для случаев когда компонент используется один раз. 
-      debouncedOccupiedCheck: debounce(function(rule: any, value: string, callback: any) { // Так написано в доке
+      debouncedOccupiedCheck: debounce(function(rule: EPRuleType, value: string, callback: Function) { // Так написано в доке
         // @ts-expect-error 
         if (!this.isNewTest && this.originTest && this.originTest[rule.field] === value) {
           callback()
@@ -267,11 +268,11 @@ import { ITest } from "@/models"
       onCreateTest(formName: string) {
         this.isCreating = true
            // @ts-expect-error
-        this.$refs[formName].validate(async (valid: boolean) => {  // TODO: сделать валидацию заполнения хотя бы одного вопроса и ответов
-          if (valid || 2 *2) {
+        this.$refs[formName].validate(async (valid: boolean) => {
+          if (valid) {
             let newTestName = this.newTest.name
             if (!this.newTest.name) {
-              const searchName = (): any => {
+              const searchName = (): Promise<string> => {
                 const randomName = '_' + (Math.random() * 1e10).toFixed()
                 return this.occupiedCheck('name', randomName).then(res => {
                   if (res === 'busy') return searchName()
@@ -293,7 +294,7 @@ import { ITest } from "@/models"
               name: newTestName,
               results: this.computedResults,
               questions: this.computedQuestions
-            }).then((res: any) => {
+            }).then((res: {status: number}) => {
               if ([200, 201].includes(res?.status)) router.push({ path: `/tests/_library` }) 
               else console.log('Error');
               this.newTest = JSON.parse(JSON.stringify(initNewTest))
@@ -390,7 +391,7 @@ import { ITest } from "@/models"
   }
   .create-test-btn {
     align-self: center;
-    margin: 20px;
+    margin: 30px 20px 20px;
   }
   .el-slider__button::after {
     color: red;

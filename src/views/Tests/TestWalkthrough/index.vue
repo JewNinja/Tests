@@ -89,7 +89,7 @@ import { defineComponent } from "vue"
         } else if (this.currentTest?.type === 'nearest') {
           
           return Object.entries(results) 
-            .map((result: any) => this.currentTest?.results[result[0]] + ': ' + result[1] / (this.currentTest?.questions?.length||1) + '%\n')
+            .map((result: Array<any>) => this.currentTest?.results[result[0]] + ': ' + result[1] / (this.currentTest?.questions?.length||1) + '%\n')
             .join('')              
         }
       },

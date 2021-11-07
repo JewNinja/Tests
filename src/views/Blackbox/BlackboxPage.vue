@@ -1,5 +1,5 @@
 <template>
-  <div class="blackbox-page" v-if="true">
+  <div class="blackbox-page">
     <BlackboxView />
   </div>
 </template>

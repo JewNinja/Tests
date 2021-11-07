@@ -1,4 +1,4 @@
-import { createStore } from 'vuex'
+import { createStore, ModuleTree } from 'vuex';
 import jwt_decode from "jwt-decode";
 import { loginRequest, signupRequest } from '@/api/auth'
 import tests from './tests'
@@ -7,8 +7,11 @@ import { axiosInstance } from '../api/config/axios'
 import { setApolloProvider } from '@/api/config/apollo'
 import { getUserDetails } from '@/api/users';
 import { IJwtTokenData } from '@/models';
+import { StoreType } from './types';
+import { UserDetailsType } from '@/api/types';
 
-export default createStore({
+
+export default createStore<StoreType>({
   state: {
     app: {
       isInit: false,
@@ -22,16 +25,16 @@ export default createStore({
     }
   },
   mutations: {
-    setInit(state: any, status: boolean) {
+    setInit(state: StoreType, status: boolean) {
       state.app.isInit = status
     },
-    setLogin(state: any, status: boolean) {
+    setLogin(state: StoreType, status: boolean) {
       state.app.isLogin = status
     },
-    setUserDetails(state: any, details: any) { // TODO: типизировать
+    setUserDetails(state: StoreType, details: UserDetailsType) {
       state.user = details
     },
-    setUserUsedBlackbox(state: any) {
+    setUserUsedBlackbox(state: StoreType) {
       state.user = {
         ...state.user,
         blackbox: {
@@ -40,7 +43,7 @@ export default createStore({
         }
       }
     },
-    setUserBlackboxPictures(state: any, pictures: Array<string>) {
+    setUserBlackboxPictures(state: StoreType, pictures: Array<string>) {
       state.user = {
         ...state.user,
         blackbox: {
@@ -70,27 +73,30 @@ export default createStore({
         commit('setInit', true)
       }
     },
-    async loginRequest({ dispatch, commit }, { email, password }) {
-      return await loginRequest(email, password).then(async (res) => {
-        if (res?.status === 201) {
-          try {
-            axiosInstance.defaults.headers.common.Authorization = `Bearer ${res.data.access_token}`
-            setApolloProvider({Authorization: `Bearer ${res.data.access_token}`})
-            localStorage.setItem('token', res.data.access_token)
-            localStorage.setItem('refresh_token', res.data.refresh_token)
-            localStorage.setItem('expires_in', res.data.expiresIn)
-  
-            var { userId }: IJwtTokenData = jwt_decode(res.data.access_token);
-            await dispatch('getUserDetails', { userId })
-          } catch (e) {
-            dispatch('logout')
-            commit('setLogin', false)
-            return false
-          }
-          commit('setLogin', true)
-          return true
-        } 
-        return false
+    async setAuthorizedUser({ dispatch, commit }, res) {
+      if (res?.status === 201) {
+        try {
+          axiosInstance.defaults.headers.common.Authorization = `Bearer ${res.data.access_token}`
+          setApolloProvider({Authorization: `Bearer ${res.data.access_token}`})
+          localStorage.setItem('token', res.data.access_token)
+          localStorage.setItem('refresh_token', res.data.refresh_token)
+          localStorage.setItem('expires_in', res.data.expiresIn)
+    
+          var { userId }: IJwtTokenData = jwt_decode(res.data.access_token);
+          await dispatch('getUserDetails', { userId })
+        } catch (e) {
+          dispatch('logout')
+          commit('setLogin', false)
+          return false
+        }
+        commit('setLogin', true)
+        return true
+      } 
+      return false
+    },
+    async loginRequest({ dispatch }, { email, password }) {
+      return await loginRequest(email, password).then(res => {
+        return dispatch('setAuthorizedUser', res)
       })
     },
     logout({ commit }) {
@@ -102,27 +108,8 @@ export default createStore({
       commit('setLogin', false)
     },
     async signupRequest({ dispatch, commit }, { email, password }) {
-      return await signupRequest(email, password).then(async (res) => {
-        if (res?.status === 201) {
-          try {
-            axiosInstance.defaults.headers.common.Authorization = `Bearer ${res.data.access_token}`  // TODO: убрать дублирование это здесь и в loginRequest
-            setApolloProvider({Authorization: `Bearer ${res.data.access_token}`})
-            localStorage.setItem('token', res.data.access_token)
-            localStorage.setItem('refresh_token', res.data.refresh_token)
-            localStorage.setItem('expires_in', res.data.expiresIn)
-  
-            var { userId }: IJwtTokenData = jwt_decode(res.data.access_token);
-            await dispatch('getUserDetails', { userId })
-          } catch (e) {
-            dispatch('logout')
-            commit('setLogin', false)
-            return false
-          }
-
-          commit('setLogin', true)
-          return true
-        } 
-        return false
+      return await signupRequest(email, password).then(res => {
+        return dispatch('setAuthorizedUser', res)
       })
     },
     async getUserDetails({ commit }, { userId, userEmail }) {
@@ -136,5 +123,5 @@ export default createStore({
   modules: {
     tests,
     blackbox,
-  }
+  } as ModuleTree<StoreType>
 })

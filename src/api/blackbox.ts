@@ -2,7 +2,7 @@ import gql from "graphql-tag";
 import { apolloClient } from "./config/apollo";
 import { axiosInstance } from "./config/axios";
 
-export const postBlackboxPicture = (formData: any) => axiosInstance({ // TODO: типизировать
+export const postBlackboxPicture = (formData: FormData) => axiosInstance({
   method: 'post',
   url: '/graphql',
   data: formData
